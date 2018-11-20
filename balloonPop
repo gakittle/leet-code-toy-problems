@@ -1,0 +1,119 @@
+var balloonPop = function(array) {
+
+	var coorToLetters = function(arr) {
+		var strs = [];
+		var str = ['`'];
+		var nthLetter = 0;
+
+		for (var i = 0; i < arr.length; i++) {
+			// var currentStr = Array.from(str);
+			str[nthLetter] = String.fromCharCode((str[nthLetter]).charCodeAt(0) + 1);
+			strs.push(str.join(''));
+			if ((str[nthLetter]).charCodeAt(0) === 122) {
+				nthLetter++;
+				str.push('`');
+			}
+		}
+
+		return strs;
+	};
+
+
+	var fire = function(targets, shotsLeft, lastX) {
+		var originalTargets = Array.from(targets);
+		var remaining = shotsLeft;
+		if (shots[lastX]) {
+		    shots[lastX].forEach(function(letter) {
+// 			    var gotcha = targets.splice(targets.indexOf(str), 1);
+			    if (targets.includes(letter)) {
+			        targets.splice(targets.indexOf(letter), 1);
+			        winners.push(lastX);
+			    }
+		    });
+		    if (targets.length < originalTargets.length) {
+		    	remaining--;
+		    }
+		    
+		}
+		
+		if (targets.length === 0) {
+			return true;
+		} else if (lastX === max[1] || remaining === 0) {
+			return false;
+		} else if (remaining > 0) {
+		    return fire(targets, remaining, lastX + 1);
+		}
+	}
+
+    var shots = {};
+	var balloons = Array.prototype.slice.call(array);
+	var letterBalloons = coorToLetters(array);
+
+	var max = balloons.reduce((max, init) => max[1] >= init[1] ? max : init, 0);
+	var min = balloons.reduce((min, init) => min[0] <= init[0] ? min : init, Infinity);
+
+	
+    for (var i = 0; i < balloons.length; i++) {
+		for (var x = min[0]; x <= max[1]; x++) {
+			if (x >= balloons[i][0] && x <= balloons[i][1]) {
+			    if (shots[x] === undefined) {
+			        shots[x] = [];
+			    }
+			    shots[x].push(letterBalloons[i]);
+			}
+		}
+	}
+
+
+// 	for (var i = 0; i < shots.length; i++) {
+	var solutions = [];
+    for (var i = 1; i <= letterBalloons.length; i++) {
+        for (var x = min[0]; x <= max[1]; x++) {
+        	var winners = [];
+            var testArgs = Array.from(letterBalloons);
+		    var balloonsPopped = fire(testArgs, i, x);
+		    if (balloonsPopped) {
+		        solutions.push(winners);
+		    }
+        }		
+	}
+// 	console.log(solutions);
+// 	var deleteThese = [];
+// 	solutions.forEach(function(arr) {
+// 		for (var j = 0; j < arr.length; j++) {
+// 		    for (var k = j + 1; k < arr.length; k++) {
+// 			    if (arr[j] === arr[k]) {
+// 				    deleteThese.push(k);
+// 			    }
+// 		    }
+// 	    }
+// 	    deleteThese.forEach(function(el) {
+// 		    arr.splice(el, 1);
+// 	    });
+// 	});
+    var minArrows = [];
+    solutions.forEach(function(arr) {
+    	var subArr = [];
+    	for (var i = 0; i < arr.length; i++) {
+    		if (!subArr.includes(arr[i])) {
+    			subArr.push(arr[i]);
+    		}
+    	}
+    	minArrows.push(subArr);
+    });
+
+//     var uniq = function(arr) {
+//     	return Array.from(new Set(arr));
+//     };
+
+//     var minArrows = uniq(solutions);
+
+		var minArrows = minArrows.reduce((min, init) => min.length <= init.length ? min : init);
+	console.log('Arrows fired from x = ' + minArrows);
+	return minArrows.length;
+
+}
+
+var input = [[10,16], [2,8], [1,6], [7,12]];
+var result = balloonPop(input);
+console.log('Answer: ' + result);

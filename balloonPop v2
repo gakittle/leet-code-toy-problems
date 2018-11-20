@@ -1,0 +1,111 @@
+var balloonPop = function(array) {
+
+	var coorToLetters = function(arr) {
+		var strs = [];
+		var str = ['`'];
+		var nthLetter = 0;
+
+		for (var i = 0; i < arr.length; i++) {
+			// var currentStr = Array.from(str);
+			str[nthLetter] = String.fromCharCode((str[nthLetter]).charCodeAt(0) + 1);
+			strs.push(str.join(''));
+			if ((str[nthLetter]).charCodeAt(0) === 122) {
+				nthLetter++;
+				str.push('`');
+			}
+		}
+
+		return strs;
+	};
+
+
+	var fire = function(targets, shotsLeft) {
+		if (targets.length === 0 || shotsLeft === 0) {
+		        return;
+		}
+
+		for (var x = min[0]; x < max[1]; x++) {
+			var originalTargets = Array.from(targets);
+			var iveBeenShot = [];
+			if (shots[x]) {
+		    shots[x].forEach(function(letter) {
+			    if (targets.includes(letter)) {
+			        var spliced = targets.splice(targets.indexOf(letter), 1);
+			        iveBeenShot.push(spliced);
+			    }
+		    });
+				if (targets.length < originalTargets.length) {
+	    			shotsLeft--;
+	    			solutions.push(x);
+
+	    			fire(targets, shotsLeft);
+		   		
+	   				if (targets.length === 0) {
+	    				masterList.push(solutions);
+	    				solutions = [];
+	    				return;
+	    			}
+	    			shotsLeft++;
+	    			solutions.pop();
+	    			while (iveBeenShot.length > 0) {
+	    				var despliced = iveBeenShot[iveBeenShot.length - 1];
+	    				targets.push(despliced[despliced.length - 1]);
+	    	    		iveBeenShot.pop();
+	      	 		}
+		   		}  
+			}
+		}	
+	}
+
+    var shots = {};
+	var balloons = Array.prototype.slice.call(array);
+	var letterBalloons = coorToLetters(array);
+
+	var max = balloons.reduce((max, init) => max[1] >= init[1] ? max : init, 0);
+	var min = balloons.reduce((min, init) => min[0] <= init[0] ? min : init, Infinity);
+
+	
+    for (var i = 0; i < balloons.length; i++) {
+		for (var x = min[0]; x <= max[1]; x++) {
+			if (x >= balloons[i][0] && x <= balloons[i][1]) {
+			    if (shots[x] === undefined) {
+			        shots[x] = [];
+			    }
+			    shots[x].push(letterBalloons[i]);
+			}
+		}
+	}
+
+
+
+
+    var masterList = [];
+    var solutions = [];
+    var targets = Array.from(letterBalloons);
+    for (var m = 1; m <= letterBalloons.length; m++) {
+    	fire(targets, m);
+    }		
+
+    var minArrows = [];
+    masterList = masterList.filter((x) => x.length > 0);
+    masterList.forEach(function(arr) {
+    	var subArr = [];
+    	for (var i = 0; i < arr.length; i++) {
+    		if (!subArr.includes(arr[i])) {
+    			subArr.push(arr[i]);
+    		}
+    	}
+    	minArrows.push(subArr);
+    });
+
+
+	var minArrows = minArrows.reduce((min, init) => min.length <= init.length ? min : init);
+	console.log(masterList);
+	console.log('Arrows fired from x = ' + minArrows);
+	return minArrows.length;
+
+}
+
+var input = [[10,16], [2,8], [1,6], [7,12]];
+var result = balloonPop(input);
+console.log('Answer: ' + result);
