@@ -21,3 +21,4 @@ var unlockRooms = function(rooms) {
 
   return lockedRooms.filter(x => x !== undefined).length === 0;
 };
+// added through VS Code's integrated Git capabilities;
