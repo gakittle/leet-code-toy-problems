@@ -1,12 +1,12 @@
-var isValidBST = function(root, left = -Infinity, right = Infinity) {
+var isValidBST = function(root, left, right) {
   // if root.val === null
   // return true
   // if left bound is > or right bound is < root.val
   // return false
   // else return isValidBST() && isValidBST()
 
-  // left = left || -Infinity;
-  // right = right || Infinity;
+  left = typeof left === "undefined" ? -Infinity : left;
+  right = typeof right === "undefined" ? Infinity : right;
 
   if (root === null) {
     return true;
@@ -19,7 +19,3 @@ var isValidBST = function(root, left = -Infinity, right = Infinity) {
     );
   }
 };
-
-var input = [0, null, -1];
-var output = isValidBST(input);
-console.log(output);
